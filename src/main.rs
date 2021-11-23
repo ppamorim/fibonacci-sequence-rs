@@ -1,8 +1,8 @@
 use num_bigint::BigUint;
 use num_traits::{Zero, One};
-use std::time::Duration;
 use std::mem::replace;
 use std::{ thread, sync::{ Arc, Mutex }};
+use std::time::{Duration, Instant};
 
 use std::io::{self, BufRead};
 use std::sync::mpsc::{self, TryRecvError};
@@ -23,17 +23,24 @@ extern crate num_cpus;
 
 fn main() {
 
-  let n = 100000;
+  let n = 3000000;
   let mut a: BigUint = Zero::zero();
   let mut b: BigUint = One::one();
+  let mut c: BigUint = Zero::zero();
 
-  for i in 0..n {
-    let sum: BigUint = &a + &b;
-    replace(&mut a, b.clone());
-    replace(&mut b, sum);
+  let start = Instant::now();
+
+  for _ in 0..n {
+    c = &a + &b;
+    a = b;
+    b = c;
   }
 
+  let duration = start.elapsed();
+
   print!("a: {}, b: {}", a, b);
+
+  println!("Time elapsed: {:?}", duration);
 
 }
 
